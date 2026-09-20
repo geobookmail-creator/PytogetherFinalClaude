@@ -1,6 +1,9 @@
 [build]
 builder = "RAILPACK"
-buildCommand = "python manage.py collectstatic --noinput"
+# Railway build containers do not receive service secrets. collectstatic only
+# needs Django to initialise, so use a throwaway key here; SECRET_KEY remains
+# required for the running web service and migrations.
+buildCommand = "SECRET_KEY=railway-build-only-not-a-production-secret python manage.py collectstatic --noinput"
 
 [deploy]
 preDeployCommand = ["python manage.py migrate --noinput"]
