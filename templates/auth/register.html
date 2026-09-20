@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Create an account
+{% endblock %}
+
+{% block content %}
+
+<div class="grid min-h-screen lg:grid-cols-2">
+
+    <div class="relative hidden bg-ink px-12 py-14 text-white lg:flex lg:flex-col lg:justify-between">
+
+        <a href="/login/" class="flex items-center gap-3">
+
+            <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-brand
+                         font-display text-lg font-bold">
+                P
+            </span>
+
+            <span class="font-display text-lg font-semibold tracking-tight">
+                PayTogether
+            </span>
+
+        </a>
+
+        <div>
+
+            <h2 class="max-w-sm font-display text-4xl font-semibold leading-tight tracking-tight">
+                Start a tour, share the code, let everyone add what they spent.
+            </h2>
+
+            <ol class="mt-10 max-w-sm space-y-5 text-sm text-white/75">
+
+                <li class="flex gap-4">
+                    <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full
+                                 bg-brand font-display text-xs font-bold text-white">1</span>
+                    <span>Create the tour with dates and a budget.</span>
+                </li>
+
+                <li class="flex gap-4">
+                    <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full
+                                 bg-brand font-display text-xs font-bold text-white">2</span>
+                    <span>Send the eight-character code to your group.</span>
+                </li>
+
+                <li class="flex gap-4">
+                    <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full
+                                 bg-brand font-display text-xs font-bold text-white">3</span>
+                    <span>Everyone adds expenses; the split updates itself.</span>
+                </li>
+
+            </ol>
+
+        </div>
+
+        <p class="text-sm text-white/40">
+            Final year project · Government Graduate College, Sheikhupura
+        </p>
+
+    </div>
+
+    <div class="flex items-center justify-center px-6 py-14">
+
+        <div class="w-full max-w-sm">
+
+            <a href="/login/" class="mb-10 flex items-center gap-3 lg:hidden">
+
+                <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-brand
+                             font-display text-lg font-bold text-white">
+                    P
+                </span>
+
+                <span class="font-display text-lg font-semibold tracking-tight">
+                    PayTogether
+                </span>
+
+            </a>
+
+            <h1 class="font-display text-3xl font-semibold tracking-tight">
+                Create your account
+            </h1>
+
+            <p class="mt-2 text-sm text-ink/60">
+                It takes about a minute.
+            </p>
+
+            <form id="registerForm" class="mt-8 space-y-4">
+
+                <div>
+                    <label for="full_name" class="block text-sm font-medium">Full name</label>
+                    <input id="full_name" type="text" required autocomplete="name"
+                           class="mt-1.5 w-full rounded-lg border border-ink/15 bg-white px-3 py-2.5
+                                  focus:border-brand focus:outline-none">
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium">Email</label>
+                    <input id="email" type="email" required autocomplete="email"
+                           class="mt-1.5 w-full rounded-lg border border-ink/15 bg-white px-3 py-2.5
+                                  focus:border-brand focus:outline-none">
+                </div>
+
+                <div>
+                    <label for="phone" class="block text-sm font-medium">
+                        Phone <span class="text-ink/45">(optional)</span>
+                    </label>
+                    <input id="phone" type="tel" autocomplete="tel"
+                           class="mt-1.5 w-full rounded-lg border border-ink/15 bg-white px-3 py-2.5
+                                  focus:border-brand focus:outline-none">
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium">Password</label>
+                    <input id="password" type="password" required minlength="8"
+                           autocomplete="new-password"
+                           class="mt-1.5 w-full rounded-lg border border-ink/15 bg-white px-3 py-2.5
+                                  focus:border-brand focus:outline-none">
+                    <p class="mt-1.5 text-xs text-ink/45">At least 8 characters.</p>
+                </div>
+
+                <div>
+                    <label for="confirm_password" class="block text-sm font-medium">
+                        Repeat password
+                    </label>
+                    <input id="confirm_password" type="password" required
+                           autocomplete="new-password"
+                           class="mt-1.5 w-full rounded-lg border border-ink/15 bg-white px-3 py-2.5
+                                  focus:border-brand focus:outline-none">
+                </div>
+
+                <button type="submit"
+                        class="w-full rounded-lg bg-brand py-3 text-sm font-semibold text-white
+                               transition hover:bg-brand2">
+                    Create account
+                </button>
+
+            </form>
+
+            <div id="message" class="mt-4"></div>
+
+            <p class="mt-8 text-sm text-ink/60">
+                Already have an account?
+                <a href="/login/" class="font-medium text-brand2 hover:underline">
+                    Sign in
+                </a>
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script src="{% static 'js/register.js' %}"></script>
+
+{% endblock %}

@@ -1,0 +1,11 @@
+# Optional: only needed when switching the DATABASES setting to MySQL.
+#
+# Install the system headers first, for example:
+#     Ubuntu/Debian  sudo apt install pkg-config default-libmysqlclient-dev build-essential
+#     macOS          brew install mysql-client pkg-config
+#     Windows        use the official MySQL Connector/C installer
+#
+# Then:  pip install -r requirements-mysql.txt
+
+-r requirements.txt
+mysqlclient==2.2.8

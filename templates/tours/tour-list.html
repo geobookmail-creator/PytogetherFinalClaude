@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+My tours
+{% endblock %}
+
+{% block content %}
+
+<div class="flex min-h-screen">
+
+    {% include "partials/sidebar.html" with active="tours" %}
+
+    <main class="flex-1 min-w-0">
+
+        {% include "partials/topbar.html" with heading="My tours" %}
+
+        <section class="px-4 py-8 sm:px-8">
+
+            <div class="mx-auto max-w-6xl">
+
+                <!-- Heading and actions -->
+
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+
+                    <div>
+
+                        <h1 class="font-display text-3xl font-semibold tracking-tight">
+                            My tours
+                        </h1>
+
+                        <p class="mt-2 text-sm text-ink/60">
+                            Every trip you started, with its join code.
+                        </p>
+
+                    </div>
+
+                    <div class="flex gap-3">
+
+                        <a href="/tours/join/"
+                           class="rounded-lg border border-ink/15 bg-white px-4 py-2.5 text-sm
+                                  font-medium transition hover:border-brand hover:text-brand2">
+                            Join with a code
+                        </a>
+
+                        <a href="/tours/create/"
+                           class="rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-white
+                                  transition hover:bg-brand2">
+                            Start a tour
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <!-- Search -->
+
+                <form id="searchForm" class="mt-6 flex flex-col gap-3 sm:flex-row">
+
+                    <input id="searchInput" type="search"
+                           placeholder="Search by name or destination"
+                           class="w-full rounded-lg border border-ink/15 bg-white px-4 py-2.5
+                                  focus:border-brand focus:outline-none">
+
+                    <div class="flex gap-3">
+
+                        <button type="submit"
+                                class="rounded-lg bg-ink px-5 py-2.5 text-sm font-semibold text-white
+                                       transition hover:bg-ink2">
+                            Search
+                        </button>
+
+                        <button id="clearSearchBtn" type="button"
+                                class="rounded-lg border border-ink/15 bg-white px-5 py-2.5 text-sm
+                                       font-medium transition hover:bg-canvas">
+                            Clear
+                        </button>
+
+                    </div>
+
+                </form>
+
+                <div id="messageArea" class="mt-5" aria-live="polite"></div>
+
+                <!-- Loading -->
+
+                <div id="loadingState"
+                     class="mt-6 rounded-2xl bg-white p-12 text-center shadow-card">
+                    <p class="text-sm text-ink/55">Loading your tours…</p>
+                </div>
+
+                <!-- Empty -->
+
+                <div id="emptyState"
+                     class="mt-6 hidden rounded-2xl border border-dashed border-ink/20 p-12 text-center">
+
+                    <h2 id="emptyStateTitle" class="font-display text-xl font-semibold">
+                        No tours yet
+                    </h2>
+
+                    <p id="emptyStateMessage" class="mx-auto mt-2 max-w-sm text-sm text-ink/55">
+                        Start a tour, share the code, and everyone can begin adding what they spend.
+                    </p>
+
+                    <a id="emptyStateButton" href="/tours/create/"
+                       class="mt-6 inline-block rounded-lg bg-brand px-5 py-2.5 text-sm
+                              font-semibold text-white transition hover:bg-brand2">
+                        Start a tour
+                    </a>
+
+                </div>
+
+                <!-- Tour cards -->
+
+                <div id="tableContainer" class="hidden">
+
+                    <div id="tourTableBody"
+                         class="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+                    </div>
+
+                </div>
+
+                <!-- Pagination -->
+
+                <div id="paginationContainer"
+                     class="mt-8 hidden flex-col items-center justify-between gap-4 sm:flex-row">
+
+                    <div id="paginationInfo" class="text-sm text-ink/55">
+                        Showing tours
+                    </div>
+
+                    <div class="flex items-center gap-3">
+
+                        <button type="button" id="previousPageBtn"
+                                class="rounded-lg border border-ink/15 bg-white px-4 py-2 text-sm
+                                       font-medium transition hover:bg-canvas
+                                       disabled:cursor-not-allowed disabled:opacity-50">
+                            Previous
+                        </button>
+
+                        <div id="currentPageInfo"
+                             class="rounded-lg bg-brand/10 px-4 py-2 text-sm font-semibold text-brand2">
+                            Page 1
+                        </div>
+
+                        <button type="button" id="nextPageBtn"
+                                class="rounded-lg border border-ink/15 bg-white px-4 py-2 text-sm
+                                       font-medium transition hover:bg-canvas
+                                       disabled:cursor-not-allowed disabled:opacity-50">
+                            Next
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<!-- Confirm delete -->
+
+<div id="deleteModal" class="fixed inset-0 z-50 hidden">
+
+    <div id="deleteModalOverlay" class="absolute inset-0 bg-ink/50"></div>
+
+    <div class="relative flex min-h-screen items-center justify-center p-4">
+
+        <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-card">
+
+            <div class="flex items-start justify-between">
+
+                <h2 class="font-display text-xl font-semibold">
+                    Delete this tour?
+                </h2>
+
+                <button type="button" id="closeDeleteModalBtn"
+                        aria-label="Close"
+                        class="text-2xl leading-none text-ink/40 hover:text-ink">
+                    &times;
+                </button>
+
+            </div>
+
+            <p id="deleteModalMessage" class="mt-3 text-sm text-ink/70"></p>
+
+            <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+
+                <button type="button" id="cancelDeleteBtn"
+                        class="rounded-lg border border-ink/15 px-5 py-2.5 text-sm font-medium
+                               transition hover:bg-canvas">
+                    Keep it
+                </button>
+
+                <button type="button" id="confirmDeleteBtn"
+                        class="rounded-lg bg-owe px-5 py-2.5 text-sm font-semibold text-white
+                               transition hover:brightness-110">
+                    Delete
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script src="{% static 'js/app.js' %}"></script>
+<script src="{% static 'js/tour-list.js' %}"></script>
+
+{% endblock %}

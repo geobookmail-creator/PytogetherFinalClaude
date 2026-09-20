@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Join a tour{% endblock %}
+
+{% block content %}
+
+<div class="flex min-h-screen">
+
+    {% include "partials/sidebar.html" with active="join" %}
+
+    <main class="flex-1 min-w-0">
+
+        {% include "partials/topbar.html" with heading="Join a tour" %}
+
+        <section class="px-4 py-8 sm:px-8">
+
+            <div class="mx-auto max-w-lg">
+
+                <h1 class="font-display text-3xl font-semibold tracking-tight">
+                    Join a tour
+                </h1>
+
+                <p class="mt-2 text-sm text-ink/60">
+                    Ask whoever set up the tour for their eight-character code.
+                </p>
+
+                <div id="messageArea" class="mt-5" aria-live="polite"></div>
+
+                <form id="joinTourForm" class="mt-6 rounded-2xl bg-white p-6 shadow-card" novalidate>
+
+                    <label for="joinCode" class="block text-sm font-medium">
+                        Join code
+                    </label>
+
+                    <input id="joinCode" name="join_code" type="text" maxlength="8"
+                           autocomplete="off" placeholder="AB12CD34"
+                           aria-describedby="joinCodeHelp"
+                           class="mt-2 w-full rounded-lg border border-ink/15 px-4 py-3 text-center
+                                  font-display text-2xl font-bold uppercase tracking-[0.35em] tnum
+                                  focus:border-brand focus:outline-none">
+
+                    <p id="joinCodeHelp" class="mt-2 text-xs text-ink/45">
+                        Letters and numbers only. Spaces are ignored.
+                    </p>
+
+                    <button id="joinButton" type="submit"
+                            class="mt-6 w-full rounded-lg bg-brand py-3 text-sm font-semibold
+                                   text-white transition hover:bg-brand2 disabled:opacity-60">
+                        Join tour
+                    </button>
+
+                </form>
+
+                <p class="mt-6 text-sm text-ink/55">
+                    Setting up the trip yourself?
+                    <a href="/tours/create/" class="font-medium text-brand2 hover:underline">
+                        Start a tour
+                    </a>
+                    and share your own code.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script src="{% static 'js/app.js' %}"></script>
+<script src="{% static 'js/join-tour.js' %}"></script>
+
+{% endblock %}

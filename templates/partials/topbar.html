@@ -1,0 +1,97 @@
+{% comment %}
+Sticky top bar. Include as the first child of <main>:
+    {% include "partials/topbar.html" with heading="Tours" %}
+{% endcomment %}
+
+<header class="sticky top-0 z-20 flex items-center justify-between gap-4
+               border-b border-ink/10 bg-white/90 px-4 py-4 backdrop-blur sm:px-8">
+
+    <div class="flex items-center gap-3">
+
+        <button id="sidebarToggle"
+                type="button"
+                aria-label="Open navigation"
+                class="rounded-lg border border-ink/15 p-2 text-ink lg:hidden">
+            <span class="block h-0.5 w-5 bg-current"></span>
+            <span class="mt-1 block h-0.5 w-5 bg-current"></span>
+            <span class="mt-1 block h-0.5 w-5 bg-current"></span>
+        </button>
+
+        <h2 class="font-display text-xl font-semibold tracking-tight">
+            {{ heading|default:"PayTogether" }}
+        </h2>
+
+    </div>
+
+    <div class="flex items-center gap-3">
+
+        <!-- Notifications -->
+        <div class="relative">
+
+            <button id="notifBtn" type="button" aria-label="Notifications"
+                    class="relative rounded-full border border-ink/15 p-2.5 text-ink
+                           transition hover:border-brand hover:text-brand2">
+
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.8" class="h-5 w-5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M15 17h5l-1.4-1.9A6.5 6.5 0 0 1 17.5 11V9a5.5 5.5 0 0 0-11 0v2
+                             a6.5 6.5 0 0 1-1.1 4.1L4 17h5m6 0v.5a3 3 0 0 1-6 0V17m6 0H9" />
+                </svg>
+
+                <span id="notifBadge"
+                      class="absolute -right-0.5 -top-0.5 hidden h-4 min-w-[1rem] items-center
+                             justify-center rounded-full bg-owe px-1 text-[10px] font-bold
+                             leading-none text-white">
+                    <span class="absolute inset-0 rounded-full bg-owe animate-ping-soft"></span>
+                    <span id="notifBadgeCount" class="relative">0</span>
+                </span>
+
+            </button>
+
+            <div id="notifBackdrop" class="fixed inset-0 z-30 hidden"></div>
+
+            <div id="notifPanel"
+                 class="absolute right-0 z-40 mt-2 hidden w-80 max-w-[90vw] origin-top-right
+                        animate-pop-in rounded-2xl border border-ink/10 bg-white shadow-card">
+
+                <div class="flex items-center justify-between border-b border-ink/10 px-4 py-3">
+                    <p class="font-display text-sm font-semibold">Notifications</p>
+                    <button id="notifMarkAllBtn" type="button"
+                            class="text-xs font-medium text-brand2 hover:underline">
+                        Mark all read
+                    </button>
+                </div>
+
+                <div id="notifList" class="thin-scroll max-h-96 divide-y divide-ink/10 overflow-y-auto">
+                    <p class="px-4 py-8 text-center text-sm text-ink/55">Loading…</p>
+                </div>
+
+            </div>
+
+        </div>
+
+        <a href="/profile/"
+           class="hidden items-center gap-2 rounded-full border border-ink/10 py-1.5 pl-1.5 pr-4 sm:flex">
+
+            <span class="flex h-7 w-7 items-center justify-center rounded-full
+                         bg-brand/10 text-xs font-bold text-brand2"
+                  id="userInitial">
+                &nbsp;
+            </span>
+
+            <span id="userName" class="text-sm font-medium">
+                Loading
+            </span>
+
+        </a>
+
+        <button id="logoutBtn"
+                class="rounded-lg border border-ink/15 px-4 py-2 text-sm font-medium
+                       text-ink transition hover:border-owe hover:bg-owe hover:text-white">
+            Log out
+        </button>
+
+    </div>
+
+</header>

@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="flex min-h-screen">
+
+    {% include "partials/sidebar.html" with active="dashboard" %}
+
+    <main class="flex-1 min-w-0">
+
+        {% include "partials/topbar.html" with heading="Dashboard" %}
+
+        <section class="px-4 py-8 sm:px-8">
+
+            <!-- Greeting -->
+
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+
+                <div>
+
+                    <h1 class="font-display text-3xl font-semibold tracking-tight">
+                        Welcome back, <span id="welcomeName">there</span>
+                    </h1>
+
+                    <p class="mt-2 text-sm text-ink/60">
+                        Here is where your shared money stands right now.
+                    </p>
+
+                </div>
+
+                <div class="flex gap-3">
+
+                    <a href="/tours/join/"
+                       class="rounded-lg border border-ink/15 bg-white px-4 py-2.5 text-sm
+                              font-medium transition hover:border-brand hover:text-brand2">
+                        Join with a code
+                    </a>
+
+                    <a href="/tours/create/"
+                       class="rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-white
+                              transition hover:bg-brand2">
+                        Start a tour
+                    </a>
+
+                </div>
+
+            </div>
+
+            <!-- Headline numbers -->
+
+            <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+
+                <div class="rounded-2xl bg-white p-6 shadow-card">
+
+                    <p class="text-sm text-ink/55">Tours</p>
+
+                    <p id="totalToursCount"
+                       class="mt-3 font-display text-3xl font-semibold tnum">0</p>
+
+                    <p class="mt-1 text-xs text-ink/45">Created and joined</p>
+
+                </div>
+
+                <div class="rounded-2xl bg-white p-6 shadow-card">
+
+                    <p class="text-sm text-ink/55">Splitting with</p>
+
+                    <p id="totalPeopleCount"
+                       class="mt-3 font-display text-3xl font-semibold tnum">0</p>
+
+                    <p class="mt-1 text-xs text-ink/45">People across your tours</p>
+
+                </div>
+
+                <div class="rounded-2xl bg-white p-6 shadow-card">
+
+                    <p class="text-sm text-ink/55">Total recorded</p>
+
+                    <p id="totalExpenseAmount"
+                       class="mt-3 font-display text-2xl font-semibold tracking-tight tnum">PKR 0.00</p>
+
+                    <p class="mt-1 text-xs text-ink/45">Spent by everyone</p>
+
+                </div>
+
+                <!-- The balance card is the one loud element on this page. -->
+                <div id="balanceCard"
+                     class="rounded-2xl bg-ink p-6 text-white shadow-card">
+
+                    <p class="text-sm text-white/60">Your balance</p>
+
+                    <p id="balanceAmount"
+                       class="mt-3 font-display text-2xl font-semibold tracking-tight tnum">PKR 0.00</p>
+
+                    <p id="balanceLabel" class="mt-1 text-xs text-white/60">
+                        All settled up
+                    </p>
+
+                </div>
+
+            </div>
+
+            <!-- Tour lists -->
+
+            <div class="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-2">
+
+                <section class="rounded-2xl bg-white p-6 shadow-card">
+
+                    <div class="mb-5 flex items-center justify-between">
+
+                        <h2 class="font-display text-lg font-semibold">Tours you started</h2>
+
+                        <a href="/tours/create/"
+                           class="text-sm font-medium text-brand2 hover:underline">
+                            Start a tour
+                        </a>
+
+                    </div>
+
+                    <div id="createdTours" class="space-y-3"></div>
+
+                </section>
+
+                <section class="rounded-2xl bg-white p-6 shadow-card">
+
+                    <div class="mb-5 flex items-center justify-between">
+
+                        <h2 class="font-display text-lg font-semibold">Tours you joined</h2>
+
+                        <a href="/tours/join/"
+                           class="text-sm font-medium text-brand2 hover:underline">
+                            Join with a code
+                        </a>
+
+                    </div>
+
+                    <div id="joinedTours" class="space-y-3"></div>
+
+                </section>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script src="{% static 'js/app.js' %}"></script>
+<script src="{% static 'js/dashboard.js' %}"></script>
+
+{% endblock %}

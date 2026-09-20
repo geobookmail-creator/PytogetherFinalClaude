@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}
+        PayTogether
+        {% endblock %}
+    </title>
+
+    <!--
+        Tailwind is compiled into static/css/app.css, so the app styles correctly
+        without an internet connection. Rebuild after changing templates or JS:
+            npm run css
+    -->
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap"
+        rel="stylesheet">
+
+</head>
+
+<body class="bg-canvas text-ink font-sans min-h-screen">
+
+    {% block content %}
+
+    {% endblock %}
+
+    <!-- Toast messages appear here, above everything else. -->
+    <div id="toastArea"
+         class="fixed bottom-6 right-6 z-[60] flex flex-col gap-3 w-80 max-w-[calc(100vw-3rem)]">
+    </div>
+
+    <script src="{% static 'js/toast.js' %}"></script>
+
+    {% block scripts %}
+
+    {% endblock %}
+
+
+</body>
+
+</html>

@@ -1,0 +1,12 @@
+{
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  },
+  "name": "paytogether",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "css": "tailwindcss -i static/css/tailwind.src.css -o static/css/app.css --minify",
+    "css:watch": "tailwindcss -i static/css/tailwind.src.css -o static/css/app.css --watch"
+  }
+}

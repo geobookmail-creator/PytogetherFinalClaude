@@ -1,0 +1,511 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Tour details
+{% endblock %}
+
+{% block content %}
+
+<div class="flex min-h-screen">
+
+    {% include "partials/sidebar.html" with active="tours" %}
+
+    <main class="flex-1 min-w-0">
+
+        {% include "partials/topbar.html" with heading="Tour details" %}
+
+        <section class="px-4 py-8 sm:px-8">
+
+            <div class="mx-auto max-w-5xl">
+
+                <a href="/tours/"
+                   class="inline-flex items-center gap-2 text-sm font-medium text-ink/60
+                          transition hover:text-brand2">
+                    Back to all tours
+                </a>
+
+                <!-- Loading -->
+
+                <div id="loadingState"
+                     class="mt-6 rounded-2xl bg-white p-12 text-center shadow-card">
+                    <p class="text-sm text-ink/55">Loading this tour…</p>
+                </div>
+
+                <!-- Error -->
+
+                <div id="errorState"
+                     class="mt-6 hidden rounded-2xl bg-white p-12 text-center shadow-card">
+                    <p id="errorMessage" class="text-sm text-ink/70"></p>
+                    <a href="/tours/"
+                       class="mt-5 inline-block rounded-lg bg-brand px-5 py-2.5 text-sm
+                              font-semibold text-white transition hover:bg-brand2">
+                        Back to all tours
+                    </a>
+                </div>
+
+                <div id="tourDetailsContainer" class="hidden">
+
+                    <!-- Hero -->
+
+                    <header id="tourHero"
+                            class="relative mt-6 overflow-hidden rounded-2xl bg-ink text-white shadow-card">
+
+                        <img id="tourImage"
+                             src=""
+                             alt=""
+                             class="absolute inset-0 hidden h-full w-full object-cover opacity-40">
+
+                        <div class="relative px-6 py-10 sm:px-10 sm:py-14">
+
+                            <span id="tourStatus"
+                                  class="inline-block rounded-full bg-white/15 px-3 py-1 text-xs
+                                         font-semibold tracking-wide">
+                                planned
+                            </span>
+
+                            <h1 id="tourTitle"
+                                class="mt-4 font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+                                Tour
+                            </h1>
+
+                            <p id="tourDestination" class="mt-2 text-white/75">—</p>
+
+                            <p id="tourDates" class="mt-1 text-sm text-white/55 tnum">—</p>
+
+                        </div>
+
+                    </header>
+
+                    <!-- Join code ticket, creator only -->
+
+                    <div id="joinCodeCard"
+                         class="ownerOnly ticket mt-6 hidden overflow-hidden rounded-2xl
+                                px-6 py-6 text-white shadow-card sm:px-8">
+
+                        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+
+                            <div>
+
+                                <p class="text-xs text-white/60">
+                                    Anyone with this code can join and add expenses
+                                </p>
+
+                                <p id="tourJoinCode"
+                                   class="mt-2 font-display text-3xl font-bold tracking-[0.35em] text-gold tnum">
+                                    ––––––––
+                                </p>
+
+                            </div>
+
+                            <div class="flex gap-3">
+
+                                <button id="copyJoinCodeBtn" type="button"
+                                        class="rounded-lg border border-white/25 px-4 py-2.5 text-sm
+                                               font-medium transition hover:bg-white/10">
+                                    Copy code
+                                </button>
+
+                                <button id="shareJoinCodeBtn" type="button"
+                                        class="rounded-lg bg-gold px-4 py-2.5 text-sm font-semibold
+                                               text-ink transition hover:brightness-110">
+                                    Share code
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Numbers -->
+
+                    <div class="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+
+                        <div class="rounded-2xl bg-white p-5 shadow-card">
+                            <p class="text-xs text-ink/55">Total spent</p>
+                            <p id="statTotalSpent"
+                               class="mt-2 font-display text-xl font-semibold tracking-tight tnum">PKR 0.00</p>
+                        </div>
+
+                        <div class="rounded-2xl bg-white p-5 shadow-card">
+                            <p class="text-xs text-ink/55">Budget</p>
+                            <p id="statBudget"
+                               class="mt-2 font-display text-xl font-semibold tracking-tight tnum">PKR 0.00</p>
+                            <p id="statBudgetNote" class="mt-1 text-xs text-ink/45"></p>
+                        </div>
+
+                        <div class="rounded-2xl bg-white p-5 shadow-card">
+                            <p class="text-xs text-ink/55">Members</p>
+                            <p id="statMembers"
+                               class="mt-2 font-display text-xl font-semibold tracking-tight tnum">0</p>
+                        </div>
+
+                        <div class="rounded-2xl bg-white p-5 shadow-card">
+                            <p class="text-xs text-ink/55">Each person's share</p>
+                            <p id="statShare"
+                               class="mt-2 font-display text-xl font-semibold tracking-tight tnum">PKR 0.00</p>
+                        </div>
+
+                    </div>
+
+                    <!-- Expenses -->
+
+                    <section class="mt-6 rounded-2xl bg-white shadow-card">
+
+                        <div class="flex flex-col gap-4 border-b border-ink/10 px-6 py-5
+                                    sm:flex-row sm:items-center sm:justify-between">
+
+                            <div>
+                                <h2 class="font-display text-lg font-semibold">Expenses</h2>
+                                <p class="mt-1 text-sm text-ink/55">
+                                    Everything the group has paid for so far
+                                </p>
+                            </div>
+
+                            <button id="addExpenseBtn" type="button"
+                                    class="rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold
+                                           text-white transition hover:bg-brand2">
+                                Add an expense
+                            </button>
+
+                        </div>
+
+                        <div id="expenseList" class="divide-y divide-ink/10">
+
+                            <p class="px-6 py-8 text-center text-sm text-ink/55">
+                                Loading expenses…
+                            </p>
+
+                        </div>
+
+                    </section>
+
+                    <!-- Settlement -->
+
+                    <section class="mt-6 rounded-2xl bg-white shadow-card">
+
+                        <div class="flex flex-col gap-4 border-b border-ink/10 px-6 py-5
+                                    sm:flex-row sm:items-center sm:justify-between">
+
+                            <div>
+                                <h2 class="font-display text-lg font-semibold">Who owes what</h2>
+                                <p class="mt-1 text-sm text-ink/55">
+                                    Each person's share against what they actually paid
+                                </p>
+                            </div>
+
+                            <button id="refreshReportBtn" type="button"
+                                    class="rounded-lg border border-ink/15 px-4 py-2.5 text-sm
+                                           font-medium transition hover:border-brand hover:text-brand2">
+                                Refresh
+                            </button>
+
+                        </div>
+
+                        <div id="reportBody" class="px-6 py-5">
+
+                            <p class="py-4 text-center text-sm text-ink/55">
+                                Loading the settlement…
+                            </p>
+
+                        </div>
+
+                        <!-- Settle up: the smallest set of payments that clears everyone -->
+
+                        <div class="border-t border-ink/10 px-6 py-5">
+
+                            <div class="flex flex-wrap items-baseline justify-between gap-2">
+                                <p class="font-medium">Settle up</p>
+                                <p class="text-xs text-ink/45">Fewest payments to clear everyone</p>
+                            </div>
+
+                            <div id="settleUpBody" class="mt-4 space-y-3">
+                                <p class="py-2 text-center text-sm text-ink/55">Working it out…</p>
+                            </div>
+
+                        </div>
+
+                        <div id="categoryBody" class="border-t border-ink/10 px-6 py-5"></div>
+
+                    </section>
+
+                    <!-- Description -->
+
+                    <section class="mt-6 rounded-2xl bg-white p-6 shadow-card">
+
+                        <h2 class="font-display text-lg font-semibold">About this tour</h2>
+
+                        <p id="tourDescription"
+                           class="mt-3 whitespace-pre-line leading-relaxed text-ink/75">
+                            No description was added.
+                        </p>
+
+                    </section>
+
+                    <!-- Creator actions -->
+
+                    <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+
+                        <a id="editTourBtn" href="#"
+                           class="ownerOnly rounded-lg bg-ink px-5 py-2.5 text-center text-sm
+                                  font-semibold text-white transition hover:bg-ink2">
+                            Edit tour
+                        </a>
+
+                        <button id="deleteTourBtn" type="button"
+                                class="ownerOnly rounded-lg border border-owe px-5 py-2.5 text-sm
+                                       font-semibold text-owe transition hover:bg-owe hover:text-white">
+                            Delete tour
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<!-- Add / edit expense -->
+
+<div id="expenseModal" class="fixed inset-0 z-50 hidden">
+
+    <div class="expenseModalClose absolute inset-0 bg-ink/50"></div>
+
+    <div class="relative flex min-h-screen items-center justify-center p-4">
+
+        <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-card">
+
+            <div class="flex items-start justify-between">
+
+                <h2 id="expenseModalTitle" class="font-display text-xl font-semibold">
+                    Add an expense
+                </h2>
+
+                <button type="button"
+                        class="expenseModalClose text-2xl leading-none text-ink/40 hover:text-ink"
+                        aria-label="Close">
+                    &times;
+                </button>
+
+            </div>
+
+            <form id="expenseForm" class="mt-5 space-y-4">
+
+                <div>
+                    <label for="expenseAmount" class="block text-sm font-medium">
+                        Amount
+                    </label>
+                    <input id="expenseAmount" type="number" step="0.01" min="0.01" required
+                           placeholder="0.00"
+                           class="mt-1.5 w-full rounded-lg border border-ink/15 px-3 py-2.5 tnum
+                                  focus:border-brand focus:outline-none">
+                </div>
+
+                <div>
+                    <label for="expenseCategory" class="block text-sm font-medium">
+                        Category
+                    </label>
+                    <select id="expenseCategory"
+                            class="mt-1.5 w-full rounded-lg border border-ink/15 bg-white px-3 py-2.5
+                                   focus:border-brand focus:outline-none">
+                        <option value="food">Food</option>
+                        <option value="transport">Transport</option>
+                        <option value="accommodation">Accommodation</option>
+                        <option value="activities">Activities</option>
+                        <option value="shopping">Shopping</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="expenseDescription" class="block text-sm font-medium">
+                        What was it for?
+                    </label>
+                    <input id="expenseDescription" type="text" maxlength="255"
+                           placeholder="Dinner at the rest stop"
+                           class="mt-1.5 w-full rounded-lg border border-ink/15 px-3 py-2.5
+                                  focus:border-brand focus:outline-none">
+                </div>
+
+                <div>
+                    <label for="expenseDate" class="block text-sm font-medium">
+                        Date
+                    </label>
+                    <input id="expenseDate" type="date" required
+                           class="mt-1.5 w-full rounded-lg border border-ink/15 px-3 py-2.5 tnum
+                                  focus:border-brand focus:outline-none">
+                </div>
+
+                <p id="expenseFormError" class="hidden text-sm text-owe"></p>
+
+                <div class="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
+
+                    <button type="button"
+                            class="expenseModalClose rounded-lg border border-ink/15 px-5 py-2.5
+                                   text-sm font-medium transition hover:bg-canvas">
+                        Cancel
+                    </button>
+
+                    <button id="saveExpenseBtn" type="submit"
+                            class="rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-white
+                                   transition hover:bg-brand2">
+                        Save expense
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Confirm delete (tour or expense) -->
+
+<div id="deleteModal" class="fixed inset-0 z-50 hidden">
+
+    <div class="deleteModalClose absolute inset-0 bg-ink/50"></div>
+
+    <div class="relative flex min-h-screen items-center justify-center p-4">
+
+        <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-card">
+
+            <h2 id="deleteModalTitle" class="font-display text-xl font-semibold">
+                Delete this tour?
+            </h2>
+
+            <p id="deleteModalMessage" class="mt-3 text-sm text-ink/70"></p>
+
+            <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+
+                <button type="button"
+                        class="deleteModalClose rounded-lg border border-ink/15 px-5 py-2.5
+                               text-sm font-medium transition hover:bg-canvas">
+                    Keep it
+                </button>
+
+                <button id="confirmDeleteBtn" type="button"
+                        class="rounded-lg bg-owe px-5 py-2.5 text-sm font-semibold text-white
+                               transition hover:brightness-110">
+                    Delete
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Pay -->
+
+<div id="payModal" class="fixed inset-0 z-50 hidden">
+
+    <div class="payModalClose absolute inset-0 bg-ink/50 backdrop-blur-sm"></div>
+
+    <div class="relative flex min-h-screen items-center justify-center p-4">
+
+        <div class="w-full max-w-md animate-pop-in rounded-2xl bg-white p-6 shadow-card">
+
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-xs font-medium uppercase tracking-wide text-ink/45">Settle up</p>
+                    <h2 class="mt-1 font-display text-xl font-semibold">
+                        Pay <span id="payModalName">someone</span>
+                    </h2>
+                </div>
+                <button type="button"
+                        class="payModalClose text-2xl leading-none text-ink/40 hover:text-ink"
+                        aria-label="Close">
+                    &times;
+                </button>
+            </div>
+
+            <p class="mt-3 rounded-xl bg-canvas px-4 py-3 text-sm text-ink/70">
+                Amount to settle
+                <span id="payModalAmount" class="float-right font-display font-semibold text-ink tnum">
+                    PKR 0.00
+                </span>
+            </p>
+
+            <!-- Step 1: choose how -->
+            <div id="payStepChoice" class="mt-5 space-y-3">
+
+                <button type="button" id="payChooseCashBtn"
+                        class="lift-card flex w-full items-center gap-4 rounded-xl border
+                               border-ink/15 px-4 py-4 text-left transition hover:border-brand">
+                    <span class="flex h-11 w-11 shrink-0 items-center justify-center
+                                 rounded-full bg-gold/15 text-xl">&#128181;</span>
+                    <span>
+                        <span class="block font-semibold">Cash</span>
+                        <span class="block text-xs text-ink/55">
+                            Mark it paid — they'll get a notification to confirm.
+                        </span>
+                    </span>
+                </button>
+
+                <button type="button" id="payChooseCardBtn"
+                        class="lift-card flex w-full items-center gap-4 rounded-xl border
+                               border-ink/15 px-4 py-4 text-left transition hover:border-brand">
+                    <span class="flex h-11 w-11 shrink-0 items-center justify-center
+                                 rounded-full bg-brand/10 text-xl">&#128179;</span>
+                    <span>
+                        <span class="block font-semibold">Card</span>
+                        <span class="block text-xs text-ink/55">
+                            Pay instantly and securely through Stripe.
+                        </span>
+                    </span>
+                </button>
+
+                <p id="payMethodError" class="hidden text-sm text-owe"></p>
+
+            </div>
+
+            <!-- Step 2: confirm cash -->
+            <div id="payStepCash" class="mt-5 hidden">
+
+                <p class="text-sm text-ink/70">
+                    Confirm you've handed
+                    <strong id="payCashAmount" class="tnum">PKR 0.00</strong>
+                    to <strong id="payCashName">them</strong> in cash. They'll be asked to
+                    confirm they received it before it's marked as settled.
+                </p>
+
+                <div class="mt-5 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                    <button type="button" id="payCashBackBtn"
+                            class="rounded-lg border border-ink/15 px-5 py-2.5 text-sm
+                                   font-medium transition hover:bg-canvas">
+                        Back
+                    </button>
+                    <button type="button" id="payCashConfirmBtn"
+                            class="btn-primary rounded-lg px-5 py-2.5 text-sm font-semibold
+                                   text-white disabled:cursor-not-allowed">
+                        I've paid in cash
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script src="{% static 'js/app.js' %}"></script>
+<script src="{% static 'js/tour-detail.js' %}"></script>
+
+{% endblock %}

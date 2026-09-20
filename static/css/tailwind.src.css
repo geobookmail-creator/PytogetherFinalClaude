@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+
+    /* Money and dates line up in columns when digits share a width. */
+    .tnum { font-variant-numeric: tabular-nums; }
+
+    body { -webkit-font-smoothing: antialiased; }
+
+    :focus-visible {
+        outline: 2px solid #0E8A7D;
+        outline-offset: 2px;
+        border-radius: 4px;
+    }
+
+}
+
+@layer components {
+
+    /* Signature element: the join code is presented as a tear-off ticket stub. */
+    .ticket {
+        background-image: linear-gradient(90deg, #0F1E2E 0%, #1B3049 100%);
+        position: relative;
+    }
+
+    .ticket::before,
+    .ticket::after {
+        content: "";
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        border-radius: 9999px;
+        background: #EEF2F7;
+        left: -9px;
+    }
+
+    .ticket::before { top: -9px; }
+    .ticket::after  { bottom: -9px; }
+
+    /* Gradient call-to-action used for the app's primary buttons. */
+    .btn-primary {
+        background-image: linear-gradient(135deg, #0E8A7D 0%, #0A6E63 100%);
+        box-shadow: 0 8px 20px -8px rgba(14, 138, 125, 0.55);
+        transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 24px -8px rgba(14, 138, 125, 0.6);
+        filter: brightness(1.05);
+    }
+
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-primary:disabled {
+        transform: none;
+        filter: none;
+        box-shadow: none;
+    }
+
+    /* A card that lifts gently on hover -- used for choice/selection cards. */
+    .lift-card {
+        transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+
+    .lift-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 26px -14px rgba(15, 30, 46, 0.35);
+    }
+
+    /* Thin, unobtrusive scrollbar for dropdown/notification panels. */
+    .thin-scroll { scrollbar-width: thin; scrollbar-color: rgba(15,30,46,.25) transparent; }
+    .thin-scroll::-webkit-scrollbar { width: 6px; }
+    .thin-scroll::-webkit-scrollbar-thumb {
+        background-color: rgba(15, 30, 46, .2);
+        border-radius: 9999px;
+    }
+
+}
+
+@layer utilities {
+
+    @keyframes pt-pop-in {
+        from { opacity: 0; transform: translateY(6px) scale(.98); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .animate-pop-in { animation: pt-pop-in .18s ease-out; }
+
+    @keyframes pt-fade-in {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    .animate-fade-in { animation: pt-fade-in .15s ease-out; }
+
+    @keyframes pt-ping-soft {
+        75%, 100% { transform: scale(1.7); opacity: 0; }
+    }
+
+    .animate-ping-soft { animation: pt-ping-soft 1.8s cubic-bezier(0,0,.2,1) infinite; }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+}

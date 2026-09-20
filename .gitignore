@@ -1,0 +1,23 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+payenv/
+.venv/
+venv/
+
+# Django-generated files and user uploads
+staticfiles/
+media/
+
+# Node
+node_modules/
+
+# OS/editor files
+.DS_Store
+.vscode/
