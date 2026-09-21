@@ -11,6 +11,7 @@ async function registerUser(event) {
     const full_name = document.getElementById("full_name").value.trim();
     const email = document.getElementById("email").value.trim();
     const phone = document.getElementById("phone").value.trim();
+    const raast_id = document.getElementById("raast_id").value.trim();
     const password = document.getElementById("password").value;
     const confirm_password = document.getElementById("confirm_password").value;
 
@@ -52,6 +53,7 @@ async function registerUser(event) {
                 full_name,
                 email,
                 phone,
+                raast_id,
                 password,
                 confirm_password
 
@@ -123,6 +125,7 @@ function displayErrors(errors) {
         full_name: "Full name",
         email: "Email",
         phone: "Phone",
+        raast_id: "Raast ID",
         password: "Password",
         confirm_password: "Repeat password",
     };

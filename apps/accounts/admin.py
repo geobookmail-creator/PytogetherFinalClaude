@@ -15,16 +15,17 @@ class UserAdmin(BaseUserAdmin):
         "email",
         "full_name",
         "phone",
+        "raast_id",
         "is_staff",
         "is_active",
         "created_at",
     )
 
-    search_fields = ("email", "full_name", "phone")
+    search_fields = ("email", "full_name", "phone", "raast_id")
 
     fieldsets = (
         (None, {"fields": ("email", "password")}),
-        ("Personal info", {"fields": ("full_name", "phone", "profile_image")}),
+        ("Personal info", {"fields": ("full_name", "phone", "raast_id", "profile_image")}),
         (
             "Permissions",
             {

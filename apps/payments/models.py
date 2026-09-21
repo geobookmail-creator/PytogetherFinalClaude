@@ -14,10 +14,12 @@ class Settlement(models.Model):
 
     METHOD_CASH = "cash"
     METHOD_CARD = "card"
+    METHOD_RAAST = "raast"
 
     METHOD_CHOICES = [
         (METHOD_CASH, "Cash"),
         (METHOD_CARD, "Card"),
+        (METHOD_RAAST, "Raast (manual)"),
     ]
 
     STATUS_PENDING = "pending"      # cash: waiting on the payee, card: checkout started

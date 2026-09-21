@@ -124,7 +124,7 @@ class TourBalancesAPIView(APIView):
 
 
 class SettlementListCreateAPIView(generics.ListCreateAPIView):
-    """List settlement activity for a tour, or start a new one (cash or card)."""
+    """List settlement activity for a tour, or start a cash, card, or Raast settlement."""
 
     permission_classes = [IsAuthenticated]
     pagination_class = None
@@ -155,7 +155,9 @@ class SettlementListCreateAPIView(generics.ListCreateAPIView):
 
         settlement = serializer.save(tour=tour, payer=request.user)
 
-        if settlement.method == Settlement.METHOD_CASH:
+        if settlement.method in (Settlement.METHOD_CASH, Settlement.METHOD_RAAST):
+
+            method_label = "in cash" if settlement.method == Settlement.METHOD_CASH else "through Raast"
 
             notify(
                 recipient=settlement.payee,
@@ -163,7 +165,7 @@ class SettlementListCreateAPIView(generics.ListCreateAPIView):
                 notif_type=Notification.TYPE_PAYMENT_REQUEST,
                 message=(
                     f"{request.user.full_name} says they paid you "
-                    f"PKR {settlement.amount} in cash for \"{tour.title}\". "
+                    f"PKR {settlement.amount} {method_label} for \"{tour.title}\". "
                     "Confirm you received it."
                 ),
                 tour=tour,
@@ -186,8 +188,36 @@ class SettlementDetailAPIView(generics.RetrieveAPIView):
         ) | Settlement.objects.filter(payee=self.request.user)
 
 
+class RaastRecipientAPIView(APIView):
+    """Reveal a Raast ID only to a member who currently owes that recipient."""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, tour_id, payee_id):
+        tour = get_accessible_tour(request, tour_id)
+
+        payment = next((
+            item for item in compute_settlement_suggestions(tour)
+            if item["from_user"].id == request.user.id
+            and item["to_user"].id == payee_id
+        ), None)
+        if payment is None:
+            raise PermissionDenied("There is no Raast payment due to this member.")
+
+        payee = payment["to_user"]
+        if not payee.raast_id:
+            raise ValidationError(
+                {"detail": "This member has not added a Raast ID yet. Ask them to add it in their profile."}
+            )
+
+        return Response({
+            "payee_name": payee.full_name,
+            "raast_id": payee.raast_id,
+        })
+
+
 class SettlementApproveAPIView(APIView):
-    """The payee confirms a cash settlement was actually received."""
+    """The payee confirms a manually paid cash or Raast settlement."""
 
     permission_classes = [IsAuthenticated]
 
@@ -197,6 +227,9 @@ class SettlementApproveAPIView(APIView):
 
         if settlement.payee_id != request.user.id:
             raise PermissionDenied("Only the person being paid can confirm this.")
+
+        if settlement.method not in (Settlement.METHOD_CASH, Settlement.METHOD_RAAST):
+            raise ValidationError("Only manual cash or Raast payments can be confirmed here.")
 
         if settlement.status != Settlement.STATUS_PENDING:
             raise ValidationError("This request has already been resolved.")
@@ -211,7 +244,7 @@ class SettlementApproveAPIView(APIView):
             notif_type=Notification.TYPE_PAYMENT_APPROVED,
             message=(
                 f"{request.user.full_name} confirmed your PKR {settlement.amount} "
-                f"cash payment for \"{settlement.tour.title}\". You're settled up."
+                f"{settlement.get_method_display().lower()} payment for \"{settlement.tour.title}\". You're settled up."
             ),
             tour=settlement.tour,
             settlement=settlement,
@@ -223,7 +256,7 @@ class SettlementApproveAPIView(APIView):
 
 
 class SettlementRejectAPIView(APIView):
-    """The payee says they never actually received the cash."""
+    """The payee says they never received a manual cash or Raast payment."""
 
     permission_classes = [IsAuthenticated]
 
@@ -233,6 +266,9 @@ class SettlementRejectAPIView(APIView):
 
         if settlement.payee_id != request.user.id:
             raise PermissionDenied("Only the person being paid can respond to this.")
+
+        if settlement.method not in (Settlement.METHOD_CASH, Settlement.METHOD_RAAST):
+            raise ValidationError("Only manual cash or Raast payments can be rejected here.")
 
         if settlement.status != Settlement.STATUS_PENDING:
             raise ValidationError("This request has already been resolved.")
@@ -247,7 +283,7 @@ class SettlementRejectAPIView(APIView):
             notif_type=Notification.TYPE_PAYMENT_REJECTED,
             message=(
                 f"{request.user.full_name} said they haven't received your "
-                f"PKR {settlement.amount} cash payment for \"{settlement.tour.title}\". "
+                f"PKR {settlement.amount} {settlement.get_method_display().lower()} payment for \"{settlement.tour.title}\". "
                 "Double check with them."
             ),
             tour=settlement.tour,

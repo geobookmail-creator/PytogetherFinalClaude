@@ -21,6 +21,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         blank=True
     )
 
+    # A Raast ID is normally a mobile-number alias linked to a bank account.
+    # It is optional and is only disclosed to a payer for an active settlement.
+    # Do not store IBANs, wallet PINs, or banking credentials here.
+    raast_id = models.CharField(
+        max_length=30,
+        blank=True,
+    )
+
     profile_image = models.ImageField(
         upload_to="profiles/",
         blank=True,

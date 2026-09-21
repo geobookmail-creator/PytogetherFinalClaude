@@ -785,13 +785,13 @@ function renderSettleUp(settleUp) {
             actionHtml = `
                 <span class="text-xs font-medium ${badgeTint}">
                     ${escapeHtml(SETTLEMENT_STATUS_LABEL[pending.status] || pending.status)}
-                    ${pending.method === "cash" ? "· cash" : "· card"}
+                    · ${escapeHtml(pending.method_display || pending.method)}
                 </span>
             `;
 
             // The payee can confirm/reject a pending cash request right here too,
             // not just from the notification bell.
-            if (pending.status === "pending" && pending.is_payee && pending.method === "cash") {
+            if (pending.status === "pending" && pending.is_payee && ["cash", "raast"].includes(pending.method)) {
                 actionHtml = `
                     <div class="flex items-center gap-2">
                         <button type="button" data-approve-settlement="${pending.id}"
@@ -911,11 +911,27 @@ function setupPayModal() {
     document.getElementById("payChooseCardBtn")
         .addEventListener("click", startCardPayment);
 
+    document.getElementById("payChooseRaastBtn")
+        .addEventListener("click", showPayRaastStep);
+
     document.getElementById("payCashBackBtn")
         .addEventListener("click", showPayChoiceStep);
 
     document.getElementById("payCashConfirmBtn")
         .addEventListener("click", confirmCashPayment);
+
+    document.getElementById("payRaastBackBtn")
+        .addEventListener("click", showPayChoiceStep);
+
+    document.getElementById("payRaastConfirmBtn")
+        .addEventListener("click", confirmRaastPayment);
+
+    document.getElementById("copyRaastIdBtn")
+        .addEventListener("click", copyRaastId);
+
+    document.querySelectorAll("[data-raast-app]").forEach((button) => {
+        button.addEventListener("click", () => openRaastPaymentApp(button.dataset.raastApp));
+    });
 
 }
 
@@ -928,6 +944,8 @@ function openPayModal(payment) {
     document.getElementById("payModalAmount").textContent = formatMoney(payment.amount);
     document.getElementById("payCashAmount").textContent = formatMoney(payment.amount);
     document.getElementById("payCashName").textContent = payment.toUserName;
+    document.getElementById("payRaastAmount").textContent = formatMoney(payment.amount);
+    document.getElementById("payRaastName").textContent = payment.toUserName;
 
     hidePayMethodError();
     showPayChoiceStep();
@@ -946,12 +964,69 @@ function closePayModal() {
 function showPayChoiceStep() {
     document.getElementById("payStepChoice").classList.remove("hidden");
     document.getElementById("payStepCash").classList.add("hidden");
+    document.getElementById("payStepRaast").classList.add("hidden");
 }
 
 
 function showPayCashStep() {
     document.getElementById("payStepChoice").classList.add("hidden");
     document.getElementById("payStepCash").classList.remove("hidden");
+    document.getElementById("payStepRaast").classList.add("hidden");
+}
+
+
+async function showPayRaastStep() {
+
+    if (!pendingPay) return;
+
+    hidePayMethodError();
+    document.getElementById("payRaastId").textContent = "Loading…";
+    document.getElementById("payStepChoice").classList.add("hidden");
+    document.getElementById("payStepCash").classList.add("hidden");
+    document.getElementById("payStepRaast").classList.remove("hidden");
+
+    try {
+        const response = await apiRequest(
+            `/api/tours/${tourId}/settlements/raast-recipient/${pendingPay.toUserId}/`
+        );
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(firstErrorMessage(data) || "Raast ID is unavailable.");
+
+        document.getElementById("payRaastId").textContent = data.raast_id;
+    }
+    catch (error) {
+        console.error(error);
+        showPayMethodError(error.message || "Raast ID is unavailable.");
+        showPayChoiceStep();
+    }
+}
+
+
+async function copyRaastId() {
+    const raastId = document.getElementById("payRaastId").textContent;
+    if (!raastId || raastId === "Loading…") return;
+
+    try {
+        await navigator.clipboard.writeText(raastId);
+        showToast("Raast ID copied. Paste it in your payment app.", "success");
+    }
+    catch (error) {
+        showToast("Copy the Raast ID manually.", "info");
+    }
+}
+
+
+function openRaastPaymentApp(app) {
+    copyRaastId();
+
+    // Payment providers do not offer a common recipient-safe deep link, so
+    // copy the ID and let the user select the app installed on their device.
+    const label = app === "jazzcash"
+        ? "JazzCash"
+        : app === "easypaisa"
+            ? "Easypaisa"
+            : "your banking app";
+    showToast(`Raast ID copied. Open ${label} and send the payment using Raast ID.`, "info", 5000);
 }
 
 
@@ -1015,6 +1090,47 @@ async function confirmCashPayment() {
         button.textContent = originalLabel;
     }
 
+}
+
+
+/** Record a user-authorised manual Raast transfer for the receiver to confirm. */
+async function confirmRaastPayment() {
+
+    if (!pendingPay) return;
+
+    const button = document.getElementById("payRaastConfirmBtn");
+    const originalLabel = button.textContent;
+    button.disabled = true;
+    button.textContent = "Sending…";
+
+    try {
+        const response = await apiRequest(`/api/tours/${tourId}/settlements/`, {
+            method: "POST",
+            body: JSON.stringify({
+                payee: pendingPay.toUserId,
+                amount: pendingPay.amount,
+                method: "raast",
+            }),
+        });
+
+        if (!response.ok) {
+            const errors = await response.json().catch(() => ({}));
+            throw new Error(firstErrorMessage(errors) || "That couldn't be recorded.");
+        }
+
+        showToast(`Raast payment sent to ${pendingPay.toUserName} for confirmation.`, "success");
+        closePayModal();
+        loadReport();
+        loadBalances();
+    }
+    catch (error) {
+        console.error(error);
+        showPayMethodError(error.message || "We couldn't reach the server. Try again in a moment.");
+    }
+    finally {
+        button.disabled = false;
+        button.textContent = originalLabel;
+    }
 }
 
 

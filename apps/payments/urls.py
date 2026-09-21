@@ -10,6 +10,7 @@ from .views import (
     SettlementDetailAPIView,
     SettlementListCreateAPIView,
     SettlementRejectAPIView,
+    RaastRecipientAPIView,
     StripeWebhookAPIView,
     TourBalancesAPIView,
 )
@@ -28,6 +29,12 @@ urlpatterns = [
         "api/tours/<int:tour_id>/settlements/",
         SettlementListCreateAPIView.as_view(),
         name="tour-settlement-list",
+    ),
+
+    path(
+        "api/tours/<int:tour_id>/settlements/raast-recipient/<int:payee_id>/",
+        RaastRecipientAPIView.as_view(),
+        name="raast-recipient",
     ),
 
     path(

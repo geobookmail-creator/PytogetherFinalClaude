@@ -1,6 +1,21 @@
-from rest_framework import serializers
+import re
+
 from django.contrib.auth import authenticate
+from rest_framework import serializers
+
 from .models import User
+
+
+def validate_raast_id(value):
+    """Accept a Raast mobile alias without accepting account details."""
+    value = value.strip().replace(" ", "")
+    if not value:
+        return ""
+    if not re.fullmatch(r"(?:\+?92|0)3\d{9}", value):
+        raise serializers.ValidationError(
+            "Enter a Pakistani mobile Raast ID, for example 03001234567."
+        )
+    return value
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -15,6 +30,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             "full_name",
             "email",
             "phone",
+            "raast_id",
             "password",
             "confirm_password",
         ]
@@ -34,6 +50,9 @@ class RegisterSerializer(serializers.ModelSerializer):
             )
 
         return value
+
+    def validate_raast_id(self, value):
+        return validate_raast_id(value)
 
     def validate(self, attrs):
 
@@ -108,6 +127,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "full_name",
             "email",
             "phone",
+            "raast_id",
             "profile_image",
             "date_joined",
         ]
@@ -117,6 +137,9 @@ class ProfileSerializer(serializers.ModelSerializer):
             "email",
             "date_joined",
         ]
+
+    def validate_raast_id(self, value):
+        return validate_raast_id(value)
 
 
 class ChangePasswordSerializer(serializers.Serializer):

@@ -466,6 +466,19 @@ Tour details
                     </span>
                 </button>
 
+                <button type="button" id="payChooseRaastBtn"
+                        class="lift-card flex w-full items-center gap-4 rounded-xl border
+                               border-ink/15 px-4 py-4 text-left transition hover:border-brand">
+                    <span class="flex h-11 w-11 shrink-0 items-center justify-center
+                                 rounded-full bg-owed/10 text-xl">R</span>
+                    <span>
+                        <span class="block font-semibold">Pay through Raast</span>
+                        <span class="block text-xs text-ink/55">
+                            Copy their Raast ID, pay in your app, then ask them to confirm.
+                        </span>
+                    </span>
+                </button>
+
                 <p id="payMethodError" class="hidden text-sm text-owe"></p>
 
             </div>
@@ -493,6 +506,54 @@ Tour details
                     </button>
                 </div>
 
+            </div>
+
+            <!-- Step 3: manual Raast transfer -->
+            <div id="payStepRaast" class="mt-5 hidden">
+                <p class="text-sm text-ink/70">
+                    Send <strong id="payRaastAmount" class="tnum">PKR 0.00</strong> to
+                    <strong id="payRaastName">them</strong> using any supported payment app.
+                </p>
+
+                <div class="mt-4 rounded-xl border border-ink/10 bg-canvas p-4">
+                    <p class="text-xs font-medium uppercase tracking-wide text-ink/45">Receiver's Raast ID</p>
+                    <div class="mt-2 flex items-center justify-between gap-3">
+                        <code id="payRaastId" class="min-w-0 break-all font-semibold text-ink">Loading…</code>
+                        <button type="button" id="copyRaastIdBtn"
+                                class="shrink-0 rounded-lg border border-ink/15 px-3 py-1.5 text-xs font-semibold hover:bg-white">
+                            Copy
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-4 grid gap-2 sm:grid-cols-3">
+                    <button type="button" data-raast-app="jazzcash"
+                            class="rounded-lg border border-ink/15 px-3 py-2 text-sm font-semibold hover:border-brand">
+                        JazzCash
+                    </button>
+                    <button type="button" data-raast-app="easypaisa"
+                            class="rounded-lg border border-ink/15 px-3 py-2 text-sm font-semibold hover:border-brand">
+                        Easypaisa
+                    </button>
+                    <button type="button" data-raast-app="bank"
+                            class="rounded-lg border border-ink/15 px-3 py-2 text-sm font-semibold hover:border-brand">
+                        Bank app
+                    </button>
+                </div>
+                <p class="mt-2 text-xs text-ink/45">
+                    Your chosen app completes the transfer. PayTogether never sees your PIN or bank login.
+                </p>
+
+                <div class="mt-5 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                    <button type="button" id="payRaastBackBtn"
+                            class="rounded-lg border border-ink/15 px-5 py-2.5 text-sm font-medium hover:bg-canvas">
+                        Back
+                    </button>
+                    <button type="button" id="payRaastConfirmBtn"
+                            class="btn-primary rounded-lg px-5 py-2.5 text-sm font-semibold text-white disabled:cursor-not-allowed">
+                        I've paid through Raast
+                    </button>
+                </div>
             </div>
 
         </div>

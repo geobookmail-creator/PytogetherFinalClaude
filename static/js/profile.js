@@ -36,6 +36,7 @@ async function loadProfile() {
         document.getElementById("fullName").value = user.full_name || "";
         document.getElementById("email").value = user.email || "";
         document.getElementById("phone").value = user.phone || "";
+        document.getElementById("raastId").value = user.raast_id || "";
 
     }
     catch (error) {
@@ -111,6 +112,7 @@ async function saveProfile(event) {
             body: JSON.stringify({
                 full_name: fullName,
                 phone: document.getElementById("phone").value.trim(),
+                raast_id: document.getElementById("raastId").value.trim(),
             }),
         });
 

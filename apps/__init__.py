@@ -1,0 +1,1 @@
+"""PayTogether application package."""
